@@ -1,7 +1,9 @@
 import type { AlgorithmModule, CategoryId } from './types'
+import { base64 } from '../algorithms/base64'
+import { hex } from '../algorithms/hex'
+import { url } from '../algorithms/url'
 
-// Tasks 10–13 push modules into this array; stubbed empty here.
-export const algorithms: AlgorithmModule[] = []
+export const algorithms: AlgorithmModule[] = [base64, hex, url]
 
 export function getById(list: AlgorithmModule[], id: string): AlgorithmModule | undefined {
   return list.find((m) => m.meta.id === id)
