@@ -53,3 +53,10 @@ textarea {
     color: #fff;
   }
 }
+
+.ct-app {
+  padding: 12px;
+  box-sizing: border-box;
+  min-height: 100vh;
+  background: transparent;
+}

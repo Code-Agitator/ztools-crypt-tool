@@ -8,9 +8,6 @@ export type CryptResult<T = string> = CryptResultOk<T> | CryptResultErr
 declare global {
   interface Window {
     services: {
-      readFile: (file: string) => string
-      writeTextFile: (text: string) => string
-      writeImageFile: (base64Url: string) => string | undefined
       crypt: {
         base64: { encode: (s: string) => CryptResult; decode: (s: string) => CryptResult }
         hex: { encode: (s: string) => CryptResult; decode: (s: string) => CryptResult }

@@ -1,25 +1,69 @@
-import { useEffect, useState } from 'react'
-import Hello from './Hello'
-import Read from './Read'
-import Write from './Write'
+import { useEffect, useMemo, useState } from 'react'
+import { algorithms, firstEnabledId } from './registry'
+import { Shell, type ShellView } from './shell'
+import { loadSettings, saveSettings, syncFeatures, type Settings } from './config'
 
 export default function App() {
-  const [enterAction, setEnterAction] = useState<any>({})
-  const [route, setRoute] = useState('')
+  const [settings, setSettings] = useState<Settings>(() => loadSettings(algorithms))
+  const [view, setView] = useState<ShellView>(() => ({
+    kind: 'algorithm',
+    id: firstEnabledId(algorithms, loadSettings(algorithms).enabled) ?? ''
+  }))
+  const [enterPayload, setEnterPayload] = useState<string | undefined>(undefined)
 
   useEffect(() => {
-    window.ztools.onPluginEnter((action) => {
-      setRoute(action.code)
-      setEnterAction(action)
+    syncFeatures(algorithms, settings.enabled)
+  }, [settings.enabled])
+
+  useEffect(() => {
+    window.ztools.onPluginEnter((action: any) => {
+      const code = action.code as string
+      const payload =
+        action.type === 'text' || action.type === 'over' || action.type === 'regex'
+          ? typeof action.payload === 'string'
+            ? action.payload
+            : undefined
+          : undefined
+
+      if (code && code.startsWith('alg:')) {
+        const id = code.slice(4)
+        setEnterPayload(payload)
+        setView({ kind: 'algorithm', id })
+      } else {
+        const id = firstEnabledId(algorithms, settings.enabled)
+        setEnterPayload(payload)
+        setView(id ? { kind: 'algorithm', id } : { kind: 'settings' })
+      }
     })
     window.ztools.onPluginOut(() => {
-      setRoute('')
+      setEnterPayload(undefined)
     })
-  }, [])
+  }, [settings.enabled])
 
-  if (route === 'hello') return <Hello enterAction={enterAction} />
-  if (route === 'read') return <Read enterAction={enterAction} />
-  if (route === 'write') return <Write enterAction={enterAction} />
+  const onSettingsChange = (s: Settings) => {
+    saveSettings(s)
+    setSettings(s)
+    if (view.kind === 'algorithm') {
+      const still = s.enabled[view.id]
+      if (!still) {
+        const next = firstEnabledId(algorithms, s.enabled)
+        setView(next ? { kind: 'algorithm', id: next } : { kind: 'settings' })
+      }
+    }
+  }
 
-  return null
+  const mods = useMemo(() => algorithms, [])
+
+  return (
+    <div className="ct-app">
+      <Shell
+        modules={mods}
+        settings={settings}
+        view={view}
+        onViewChange={setView}
+        onSettingsChange={onSettingsChange}
+        enterPayload={enterPayload}
+      />
+    </div>
+  )
 }
