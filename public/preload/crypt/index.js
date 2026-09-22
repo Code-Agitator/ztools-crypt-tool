@@ -2,6 +2,7 @@ const encoding = require('./encoding')
 const hash = require('./hash')
 const aes = require('./aes')
 const rsa = require('./rsa')
+const { hmac, pbkdf2 } = require('./hmac-pbkdf2')
 
 module.exports = {
   base64: encoding.base64,
@@ -10,5 +11,7 @@ module.exports = {
   md5: hash.md5,
   sha256: hash.sha256,
   aes,
-  rsa
+  rsa,
+  hmac,
+  pbkdf2
 }

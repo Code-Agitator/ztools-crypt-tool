@@ -1,5 +1,6 @@
 const fs = require('node:fs')
 const path = require('node:path')
+const crypt = require('./crypt')
 
 // 通过 window 对象向渲染进程注入 nodejs 能力
 window.services = {
@@ -23,5 +24,7 @@ window.services = {
     )
     fs.writeFileSync(filePath, base64Url.substring(matchs[0].length), { encoding: 'base64' })
     return filePath
-  }
+  },
+  // 加解密服务
+  crypt
 }

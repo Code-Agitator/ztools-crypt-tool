@@ -1,5 +1,5 @@
 function ok(data) {
-  return { ok: true, data: String(data) }
+  return { ok: true, data }
 }
 
 function fail(error) {
