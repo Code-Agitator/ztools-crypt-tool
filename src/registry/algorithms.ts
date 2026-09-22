@@ -6,9 +6,19 @@ import { md5 } from '../algorithms/md5'
 import { sha256 } from '../algorithms/sha256'
 import { aes } from '../algorithms/aes'
 import { rsa } from '../algorithms/rsa'
+import { hmac } from '../algorithms/hmac'
+import { pbkdf2 } from '../algorithms/pbkdf2'
 
 export const algorithms: AlgorithmModule[] = [
-  base64, hex, url, md5, sha256, aes, rsa
+  base64,
+  hex,
+  url,
+  md5,
+  sha256,
+  aes,
+  rsa,
+  hmac,
+  pbkdf2
 ]
 
 export function getById(list: AlgorithmModule[], id: string): AlgorithmModule | undefined {

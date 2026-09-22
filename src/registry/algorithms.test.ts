@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { AlgorithmModule } from './types'
-import { firstEnabledId, getByCategory, getById, getEnabledList } from './algorithms'
+import { algorithms, firstEnabledId, getByCategory, getById, getEnabledList } from './algorithms'
 
 const m = (id: string, category: AlgorithmModule['meta']['category'], on: boolean): AlgorithmModule => ({
   meta: {
@@ -34,5 +34,12 @@ describe('registry helpers', () => {
   it('getById / getByCategory', () => {
     expect(getById(list, 'aes')?.meta.id).toBe('aes')
     expect(getByCategory(list, 'encoding').map((x) => x.meta.id)).toEqual(['base64'])
+  })
+
+  it('ships nine batch-1 algorithms in order', () => {
+    expect(algorithms.map((m) => m.meta.id)).toEqual([
+      'base64', 'hex', 'url', 'md5', 'sha256', 'aes', 'rsa', 'hmac', 'pbkdf2'
+    ])
+    expect(algorithms.every((m) => m.meta.defaultEnabled)).toBe(true)
   })
 })
