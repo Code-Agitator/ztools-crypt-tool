@@ -63,7 +63,6 @@ export default function BcryptUI({ enterPayload }: AlgorithmProps) {
           <Field
             label="密码"
             help="待哈希或验证的密码（bcrypt 限制 72 字节）"
-            type="secret"
             value={password}
             onChange={setPassword}
             copyable

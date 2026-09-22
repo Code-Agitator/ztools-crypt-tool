@@ -9,7 +9,7 @@
   "preload": "preload/services.js",
   "logo": "logo.svg",
   "development": {
-    "main": "http://localhost:5174"
+    "main": "http://localhost:5173"
   },
   "features": [
     {
@@ -21,7 +21,7 @@
         "base64", "url编码", "urlencode", "hex", "十六进制",
         "md5", "sha", "sha256", "sha512",
         "aes", "rsa", "hmac", "pbkdf2", "bcrypt",
-        "对称加密", "非对称加密", "签名", "验签",
+        "签名", "验签",
         "crypt", "encode", "decode", "encrypt", "decrypt"
       ]
     },
