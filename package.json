@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "test": "vitest run"
+    "test": "vitest run",
+    "postinstall": "cd public/preload && npm install"
+
   },
   "dependencies": {
     "react": "^19.0.0",
