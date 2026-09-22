@@ -2,8 +2,10 @@ import type { AlgorithmModule, CategoryId } from './types'
 import { base64 } from '../algorithms/base64'
 import { hex } from '../algorithms/hex'
 import { url } from '../algorithms/url'
+import { md5 } from '../algorithms/md5'
+import { sha256 } from '../algorithms/sha256'
 
-export const algorithms: AlgorithmModule[] = [base64, hex, url]
+export const algorithms: AlgorithmModule[] = [base64, hex, url, md5, sha256]
 
 export function getById(list: AlgorithmModule[], id: string): AlgorithmModule | undefined {
   return list.find((m) => m.meta.id === id)

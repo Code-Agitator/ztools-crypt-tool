@@ -9,9 +9,11 @@ export function runCodec(fn: () => CryptResult): CryptResult {
 }
 
 export function showError(result: CryptResult): string {
-  return result.ok ? '' : result.error
+  if (result.ok) return ''
+  return result.error
 }
 
 export function showData(result: CryptResult): string {
-  return result.ok ? result.data : ''
+  if (!result.ok) return ''
+  return result.data
 }
