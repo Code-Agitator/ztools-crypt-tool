@@ -1,0 +1,29 @@
+import type { FC } from 'react'
+
+export type CategoryId =
+  | 'encoding'
+  | 'hash'
+  | 'symmetric'
+  | 'asymmetric'
+  | 'hmac'
+  | 'kdf'
+
+export interface AlgorithmMeta {
+  id: string
+  category: CategoryId
+  label: string
+  title: string
+  reversible: boolean
+  cmds: string[]
+  defaultEnabled: boolean
+  teach: { summary: string }
+}
+
+export interface AlgorithmProps {
+  enterPayload?: string
+}
+
+export interface AlgorithmModule {
+  meta: AlgorithmMeta
+  Component: FC<AlgorithmProps>
+}
