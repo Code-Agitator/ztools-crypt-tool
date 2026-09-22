@@ -3,6 +3,7 @@ const hash = require('./hash')
 const aes = require('./aes')
 const rsa = require('./rsa')
 const { hmac, pbkdf2 } = require('./hmac-pbkdf2')
+const { bcrypt } = require('./bcrypt')
 
 module.exports = {
   base64: encoding.base64,
@@ -13,5 +14,6 @@ module.exports = {
   aes,
   rsa,
   hmac,
-  pbkdf2
+  pbkdf2,
+  bcrypt
 }

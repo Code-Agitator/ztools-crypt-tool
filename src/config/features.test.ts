@@ -20,7 +20,7 @@ describe('features', () => {
     expect(buildFeature(meta)).toEqual({
       code: 'alg:aes',
       explain: 'AES 对称加密',
-      icon: 'logo.png',
+      icon: 'logo.svg',
       cmds: ['aes加密', 'AES']
     })
   })

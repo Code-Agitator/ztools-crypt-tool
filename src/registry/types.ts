@@ -8,6 +8,8 @@ export type CategoryId =
   | 'hmac'
   | 'kdf'
 
+export type DirectionMode = 'encode' | 'decode' | 'encrypt' | 'decrypt'
+
 export interface AlgorithmMeta {
   id: string
   category: CategoryId
@@ -21,6 +23,8 @@ export interface AlgorithmMeta {
 
 export interface AlgorithmProps {
   enterPayload?: string
+  direction?: DirectionMode
+  onDirectionChange?: (dir: DirectionMode) => void
 }
 
 export interface AlgorithmModule {

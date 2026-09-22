@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react'
 import type { AlgorithmProps } from '../../registry/types'
-import { Actions, CopyButton, Field } from '../../shared'
+import { Field } from '../../shared'
 import { runCodec, showError, showData } from '../codec'
 
-export default function UrlUI({ enterPayload }: AlgorithmProps) {
+export default function UrlUI({ enterPayload, direction = 'encode' }: AlgorithmProps) {
+  const dir = direction
   const [input, setInput] = useState('')
   const [output, setOutput] = useState('')
   const [error, setError] = useState('')
@@ -12,7 +13,7 @@ export default function UrlUI({ enterPayload }: AlgorithmProps) {
     if (enterPayload) setInput(enterPayload)
   }, [enterPayload])
 
-  const run = (dir: 'encode' | 'decode') => {
+  const run = () => {
     const r = runCodec(() =>
       dir === 'encode'
         ? window.services.crypt.url.encode(input)
@@ -22,26 +23,47 @@ export default function UrlUI({ enterPayload }: AlgorithmProps) {
     setOutput(showData(r))
   }
 
+  const inputLabel = dir === 'encode' ? '原文' : 'URL 编码'
+  const inputHelp = dir === 'encode'
+    ? '待编码的原文（含中文或特殊字符）'
+    : '待解码的 %XX 编码字符串'
+  const outputLabel = dir === 'encode' ? 'URL 编码' : '原文'
+  const outputHelp = dir === 'encode'
+    ? '编码后的 %XX 字符串'
+    : '解码后的原始文本'
+
   return (
     <>
-      <div className="ct-grid2">
-        <Field
-          label="输入"
-          help="待编码的原文，或待解码的 %XX 字符串"
-          type="textarea"
-          value={input}
-          onChange={setInput}
-        />
-        <Field label="输出" help="结果文本" type="textarea" value={output} onChange={() => {}} readOnly />
+      <div className="ct-input-zone">
+        <div className="ct-zone-label">输入</div>
+        <div className="ct-grid2">
+          <Field
+            label={inputLabel}
+            help={inputHelp}
+            type="textarea"
+            value={input}
+            onChange={setInput}
+            copyable
+          />
+        </div>
       </div>
-      <Actions
-        items={[
-          { label: '编码', variant: 'primary', onClick: () => run('encode') },
-          { label: '解码', onClick: () => run('decode') }
-        ]}
-      />
       <div className="ct-actions">
-        <CopyButton text={output} />
+        <button type="button" className="ct-btn ct-btn-primary" onClick={run}>
+          执行
+        </button>
+      </div>
+      <div className="ct-output-zone">
+        <div className="ct-zone-label">输出</div>
+        <Field
+          label={outputLabel}
+          help={outputHelp}
+          type="textarea"
+          value={output}
+          onChange={() => {}}
+          readOnly
+          variant="output"
+          copyable
+        />
       </div>
       {error ? <div className="ct-field-error">{error}</div> : null}
     </>

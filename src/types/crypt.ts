@@ -1,1 +1,1 @@
-export type CryptResult = { ok: true; data: string } | { ok: false; error: string }
+export type CryptResult<T = string> = { ok: true; data: T } | { ok: false; error: string }

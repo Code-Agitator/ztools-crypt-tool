@@ -11,7 +11,7 @@ export function buildFeature(meta: AlgorithmMeta): FeatureInput {
   return {
     code: `alg:${meta.id}`,
     explain: meta.title,
-    icon: 'logo.png',
+    icon: 'logo.svg',
     cmds: [...meta.cmds]
   }
 }

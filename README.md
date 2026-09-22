@@ -88,11 +88,13 @@ npm run build    # 构建到 dist/
 npm test         # 运行 vitest 全套测试
 ```
 
-命令行直达（开发模式下可在 ZTools 搜索框触发）：`base64`、`hex`、`url编码`、`md5`、`sha256`、`aes加密`、`rsa加密`、`hmac`、`pbkdf2`。
+命令行直达（开发模式下可在 ZTools 搜索框触发）：`base64`、`hex`、`url编码`、`md5`、`sha256`、`aes加密`、`rsa加密`、`hmac`、
+`pbkdf2`。
 
 ## 🧩 如何新增一种算法
 
-1. **Preload 实现**：在 `public/preload/crypt/` 新增 `<algo>.js`，用 `envelope.js` 的 `ok/fail/tryCrypt` 包裹并暴露 `{ ok, data/error }` 结果；在 `index.js` 中挂载导出。
+1. **Preload 实现**：在 `public/preload/crypt/` 新增 `<algo>.js`，用 `envelope.js` 的 `ok/fail/tryCrypt` 包裹并暴露
+   `{ ok, data/error }` 结果；在 `index.js` 中挂载导出。
 2. **类型**：在 `src/env.d.ts` 的 `CryptNamespace` 中追加对应方法签名。
 3. **算法模块**：在 `src/algorithms/<algo>/` 下创建 `meta.ts`、`ui.tsx`、`index.ts`，导出 `AlgorithmModule`。
 4. **注册**：在 `src/registry/algorithms.ts` 的数组中加入新模块。
@@ -102,11 +104,11 @@ npm test         # 运行 vitest 全套测试
 
 ## 📦 脚本
 
-| 命令 | 作用 |
-|---|---|
-| `npm run dev` | 启动 Vite 开发服务器 |
-| `npm run build` | tsc 类型检查 + Vite 生产构建 |
-| `npm test` | 运行 vitest 单元测试 |
+| 命令                                      | 作用                   |
+|-----------------------------------------|----------------------|
+| `npm run dev`                           | 启动 Vite 开发服务器        |
+| `npm run build`                         | tsc 类型检查 + Vite 生产构建 |
+| `npm test`                              | 运行 vitest 单元测试       |
 | `npm run build` 成功后会输出到 `dist/`，可直接用于分发 |
 
 ## 📄 协议

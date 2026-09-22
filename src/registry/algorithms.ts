@@ -8,6 +8,7 @@ import { aes } from '../algorithms/aes'
 import { rsa } from '../algorithms/rsa'
 import { hmac } from '../algorithms/hmac'
 import { pbkdf2 } from '../algorithms/pbkdf2'
+import { bcrypt } from '../algorithms/bcrypt'
 
 export const algorithms: AlgorithmModule[] = [
   base64,
@@ -18,7 +19,8 @@ export const algorithms: AlgorithmModule[] = [
   aes,
   rsa,
   hmac,
-  pbkdf2
+  pbkdf2,
+  bcrypt
 ]
 
 export function getById(list: AlgorithmModule[], id: string): AlgorithmModule | undefined {

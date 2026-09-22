@@ -15,6 +15,9 @@ export interface FieldProps {
   rows?: number
   placeholder?: string
   style?: CSSProperties
+  variant?: 'input' | 'output'
+  copyable?: boolean
+  onClear?: () => void
 }
 
 export default function Field({
@@ -29,14 +32,43 @@ export default function Field({
   readOnly,
   rows = 3,
   placeholder,
-  style
+  style,
+  variant,
+  copyable,
+  onClear
 }: FieldProps) {
   const id = `f-${label.replace(/\s+/g, '-')}`
+  const isOutput = variant === 'output'
+
+  const onCopy = () => {
+    window.ztools.copyText?.(value ?? '')
+  }
+
   return (
-    <div className="ct-field" style={style}>
+    <div className={`ct-field ${isOutput ? 'ct-field-output' : ''}`} style={style}>
       <label htmlFor={id}>
         <span>{label}</span>
         {hint ? <em>{hint}</em> : null}
+        {copyable ? (
+          <button
+            type="button"
+            className="ct-field-copy"
+            onClick={onCopy}
+            title="复制"
+          >
+            ⧉
+          </button>
+        ) : null}
+        {onClear ? (
+          <button
+            type="button"
+            className="ct-field-clear"
+            onClick={onClear}
+            title="清除"
+          >
+            ×
+          </button>
+        ) : null}
       </label>
       {type === 'textarea' ? (
         <textarea

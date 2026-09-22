@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react'
 import type { AlgorithmProps } from '../../registry/types'
-import { Actions, CopyButton, Field } from '../../shared'
+import { Field } from '../../shared'
 import { runCodec, showError, showData } from '../codec'
 
-export default function RsaUI({ enterPayload }: AlgorithmProps) {
+export default function RsaUI({ enterPayload, direction = 'encrypt' }: AlgorithmProps) {
+  const dir = direction
   const [publicKey, setPublicKey] = useState('')
   const [privateKey, setPrivateKey] = useState('')
   const [input, setInput] = useState('')
@@ -32,37 +33,93 @@ export default function RsaUI({ enterPayload }: AlgorithmProps) {
     }
   }
 
-  const encrypt = () => {
-    const r = runCodec(() => window.services.crypt.rsa.encrypt({ publicKey, plaintext: input }))
+  const run = () => {
+    const r = runCodec(() =>
+      dir === 'encrypt'
+        ? window.services.crypt.rsa.encrypt({ publicKey, plaintext: input })
+        : window.services.crypt.rsa.decrypt({ privateKey, ciphertext: input })
+    )
     setError(showError(r))
     setOutput(showData(r))
   }
 
-  const decrypt = () => {
-    const r = runCodec(() => window.services.crypt.rsa.decrypt({ privateKey, ciphertext: input }))
-    setError(showError(r))
-    setOutput(showData(r))
-  }
+  const primaryKey = dir === 'encrypt'
+    ? { label: '公钥 Public Key', hint: 'PEM', help: '用于加密；可粘贴或点击「生成密钥对」获取', value: publicKey, setter: setPublicKey }
+    : { label: '私钥 Private Key', hint: 'PEM', help: '用于解密；请勿泄露', value: privateKey, setter: setPrivateKey }
+  const secondaryKey = dir === 'encrypt'
+    ? { label: '私钥 Private Key (可选)', hint: 'PEM', help: '如已有密钥对，可一并粘贴以便轮换使用', value: privateKey, setter: setPrivateKey }
+    : { label: '公钥 Public Key (可选)', hint: 'PEM', help: '如已有密钥对，可一并粘贴以便轮换使用', value: publicKey, setter: setPublicKey }
+
+  const inputLabel = dir === 'encrypt' ? '明文' : '密文'
+  const inputHelp = dir === 'encrypt'
+    ? '待加密的 UTF-8 明文'
+    : '待解密的 Base64 密文'
+  const outputLabel = dir === 'encrypt' ? '密文' : '明文'
+  const outputHelp = dir === 'encrypt'
+    ? '加密后的 Base64 密文'
+    : '解密后的 UTF-8 明文'
 
   return (
     <>
-      <div className="ct-grid2">
-        <Field label="公钥 Public Key" hint="PEM" help="用于加密；可从私钥或生成获得" type="textarea" rows={4} value={publicKey} onChange={setPublicKey} />
-        <Field label="私钥 Private Key" hint="PEM" help="用于解密；勿泄露" type="textarea" rows={4} value={privateKey} onChange={setPrivateKey} />
-        <Field label="输入" help="加密传明文；解密传 Base64 密文（单块）" type="textarea" value={input} onChange={setInput} />
-        <Field label="输出" help="加密得 Base64；解密得明文" type="textarea" value={output} onChange={() => {}} readOnly />
+      <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 4 }}>
+        <button
+          type="button"
+          className="ct-tab ct-tab-ghost"
+          onClick={keygen}
+        >
+          生成密钥对
+        </button>
       </div>
-      <Actions
-        items={[
-          { label: '生成密钥对', variant: 'ghost', onClick: keygen },
-          { label: '加密', variant: 'primary', onClick: encrypt },
-          { label: '解密', onClick: decrypt }
-        ]}
-      />
+      <div className="ct-input-zone">
+        <div className="ct-zone-label">输入</div>
+        <div className="ct-grid2">
+          <Field
+            label={primaryKey.label}
+            hint={primaryKey.hint}
+            help={primaryKey.help}
+            type="textarea"
+            rows={4}
+            value={primaryKey.value}
+            onChange={primaryKey.setter}
+            copyable
+          />
+          <Field
+            label={secondaryKey.label}
+            hint={secondaryKey.hint}
+            help={secondaryKey.help}
+            type="textarea"
+            rows={4}
+            value={secondaryKey.value}
+            onChange={secondaryKey.setter}
+            copyable
+          />
+          <Field
+            label={inputLabel}
+            help={inputHelp}
+            type="textarea"
+            value={input}
+            onChange={setInput}
+            copyable
+          />
+        </div>
+      </div>
       <div className="ct-actions">
-        <CopyButton text={output} />
-        <CopyButton text={publicKey} label="复制公钥" />
-        <CopyButton text={privateKey} label="复制私钥" />
+        <button type="button" className="ct-btn ct-btn-primary" onClick={run}>
+          执行
+        </button>
+      </div>
+      <div className="ct-output-zone">
+        <div className="ct-zone-label">输出</div>
+        <Field
+          label={outputLabel}
+          help={outputHelp}
+          type="textarea"
+          value={output}
+          onChange={() => {}}
+          readOnly
+          variant="output"
+          copyable
+        />
       </div>
       {notice ? <div className="ct-field-help">{notice}</div> : null}
       {error ? <div className="ct-field-error">{error}</div> : null}

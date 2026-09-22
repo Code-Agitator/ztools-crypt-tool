@@ -1,9 +1,7 @@
 /// <reference types="vite/client" />
 /// <reference types="@ztools-center/ztools-api-types" />
 
-export type CryptResultOk<T = string> = { ok: true; data: T }
-export type CryptResultErr = { ok: false; error: string }
-export type CryptResult<T = string> = CryptResultOk<T> | CryptResultErr
+import type { CryptResult } from './types/crypt'
 
 declare global {
   interface Window {
@@ -35,6 +33,10 @@ declare global {
             keylen: number
             hash: string
           }) => CryptResult
+        }
+        bcrypt: {
+          hash: (a: { password: string; cost?: number }) => CryptResult
+          verify: (a: { password: string; hash: string }) => CryptResult<boolean>
         }
       }
     }

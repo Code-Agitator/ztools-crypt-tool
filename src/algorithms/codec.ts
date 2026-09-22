@@ -1,6 +1,6 @@
 import type { CryptResult } from '../types/crypt'
 
-export function runCodec(fn: () => CryptResult): CryptResult {
+export function runCodec<T = string>(fn: () => CryptResult<T>): CryptResult<T> {
   try {
     return fn()
   } catch (e) {
@@ -8,12 +8,12 @@ export function runCodec(fn: () => CryptResult): CryptResult {
   }
 }
 
-export function showError(result: CryptResult): string {
+export function showError<T>(result: CryptResult<T>): string {
   if (result.ok) return ''
   return result.error
 }
 
-export function showData(result: CryptResult): string {
-  if (!result.ok) return ''
-  return result.data
+export function showData<T>(result: CryptResult<T>): T extends string ? string : T {
+  if (!result.ok) return '' as any
+  return result.data as any
 }

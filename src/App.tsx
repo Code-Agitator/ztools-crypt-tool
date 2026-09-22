@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { algorithms, firstEnabledId } from './registry'
 import { Shell, type ShellView } from './shell'
 import { loadSettings, saveSettings, syncFeatures, type Settings } from './config'
+import { useZtoolsTheme } from './hooks/useZtoolsTheme'
 
 export default function App() {
   const [settings, setSettings] = useState<Settings>(() => loadSettings(algorithms))
@@ -10,6 +11,11 @@ export default function App() {
     id: firstEnabledId(algorithms, loadSettings(algorithms).enabled) ?? ''
   }))
   const [enterPayload, setEnterPayload] = useState<string | undefined>(undefined)
+  const { primaryColor } = useZtoolsTheme()
+
+  useEffect(() => {
+    document.documentElement.style.setProperty('--blue', primaryColor)
+  }, [primaryColor])
 
   useEffect(() => {
     syncFeatures(algorithms, settings.enabled)
