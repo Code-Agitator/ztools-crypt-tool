@@ -35,6 +35,41 @@ export default function App() {
       }
     })
   }, [settings.enabled])
+  useEffect(() => {
+    // @ts-ignore
+    window.ztools.onThemeChange((themeInfo: {
+      isDark: boolean,
+      primaryColor: string,
+      customColor: string,
+      windowMaterial: string
+    }) => {
+      const root = document.documentElement
+
+      // 1. 应用主色调
+      if (themeInfo.primaryColor) {
+        root.style.setProperty('--blue', themeInfo.primaryColor)
+      }
+
+      // 2. 应用自定义色（如有）
+      if (themeInfo.customColor) {
+        root.style.setProperty('--custom-color', themeInfo.customColor)
+      }
+
+      // 3. 切换深色/浅色模式 class
+      if (themeInfo.isDark) {
+        root.classList.add('theme-dark')
+        root.classList.remove('theme-light')
+      } else {
+        root.classList.add('theme-light')
+        root.classList.remove('theme-dark')
+      }
+
+      // 4. 应用窗口材质（如支持）
+      if (themeInfo.windowMaterial) {
+        root.dataset.windowMaterial = themeInfo.windowMaterial
+      }
+    })
+  }, [])
 
   useEffect(() => {
     const ok = window.ztools.setSubInput(
