@@ -1,25 +1,41 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { algorithms, firstEnabledId } from './registry'
 import { Shell, type ShellView } from './shell'
-import { loadSettings, saveSettings, syncFeatures, type Settings } from './config'
+import { loadSettings, saveSettings, syncFeatureDiff, type Settings } from './config'
 import { useZtoolsTheme } from './hooks/useZtoolsTheme'
 
 export default function App() {
-  const [settings, setSettings] = useState<Settings>(() => loadSettings(algorithms))
-  const [view, setView] = useState<ShellView>(() => ({
-    kind: 'algorithm',
-    id: firstEnabledId(algorithms, loadSettings(algorithms).enabled) ?? ''
-  }))
+  // 初始化时只调用一次 loadSettings
+  const [settings, setSettings] = useState<Settings>(() => {
+    const initial = loadSettings(algorithms)
+    // 存储初始 enabled 用于 view 计算
+    ;(App as any)._initialEnabled = initial.enabled
+    return initial
+  })
+  const [view, setView] = useState<ShellView>(() => {
+    const initialEnabled = (App as any)._initialEnabled ?? loadSettings(algorithms).enabled
+    const firstId = firstEnabledId(algorithms, initialEnabled)
+    return { kind: 'algorithm', id: firstId ?? '' }
+  })
   const [searchText, setSearchText] = useState('')
   const { primaryColor } = useZtoolsTheme()
+
+  // 用一个 ref 追踪上一次的 enabled 状态用于增量同步
+  const prevEnabledRef = useRef(settings.enabled)
 
   useEffect(() => {
     document.documentElement.style.setProperty('--blue', primaryColor)
   }, [primaryColor])
 
   useEffect(() => {
-    syncFeatures(algorithms, settings.enabled)
+    // 增量同步：只更新发生变化的模块
+    syncFeatureDiff(algorithms, prevEnabledRef.current, settings.enabled)
+    prevEnabledRef.current = settings.enabled
   }, [settings.enabled])
+
+  // 用 ref 保持 settings.enabled 最新，避免 effect 依赖它
+  const enabledRef = useRef(settings.enabled)
+  enabledRef.current = settings.enabled
 
   useEffect(() => {
     window.ztools.onPluginEnter((action: any) => {
@@ -29,12 +45,12 @@ export default function App() {
         setView({ kind: 'algorithm', id })
         setSearchText('')
       } else {
-        const id = firstEnabledId(algorithms, settings.enabled)
+        const id = firstEnabledId(algorithms, enabledRef.current)
         setView(id ? { kind: 'algorithm', id } : { kind: 'settings' })
         setSearchText('')
       }
     })
-  }, [settings.enabled])
+  }, [])
   useEffect(() => {
     // @ts-ignore
     window.ztools.onThemeChange((themeInfo: {

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { memo, useMemo, useState, useCallback } from 'react'
 import type { AlgorithmModule } from '../registry/types'
 import { CATEGORIES, categoryLabel, getByCategory } from '../registry'
 import { defaultSettings, type Settings } from '../config'
@@ -10,23 +10,28 @@ interface Props {
   onChange: (s: Settings) => void
 }
 
-export default function SettingsPage({ modules, settings, onChange }: Props) {
+function SettingsPage({ modules, settings, onChange }: Props) {
   const [query, setQuery] = useState('')
 
-  const toggle = (id: string, on: boolean) => {
+  const toggle = useCallback((id: string, on: boolean) => {
     onChange({ ...settings, enabled: { ...settings.enabled, [id]: on } })
-  }
+  }, [onChange, settings])
 
-  const filtered = query.trim()
-    ? modules.filter((m) => {
-        const q = query.trim().toLowerCase()
-        return (
-          m.meta.label.toLowerCase().includes(q) ||
-          m.meta.title.toLowerCase().includes(q) ||
-          m.meta.id.toLowerCase().includes(q)
-        )
-      })
-    : null
+  const handleReset = useCallback(() => {
+    onChange(defaultSettings(modules))
+  }, [onChange, modules])
+
+  // 缓存搜索结果
+  const filtered = useMemo(() => {
+    const q = query.trim()
+    if (!q) return null
+    const lower = q.toLowerCase()
+    return modules.filter((m) =>
+      m.meta.label.toLowerCase().includes(lower) ||
+      m.meta.title.toLowerCase().includes(lower) ||
+      m.meta.id.toLowerCase().includes(lower)
+    )
+  }, [modules, query])
 
   return (
     <div className="ct-main">
@@ -96,7 +101,7 @@ export default function SettingsPage({ modules, settings, onChange }: Props) {
         <button
           type="button"
           className="ct-btn ct-btn-primary"
-          onClick={() => onChange(defaultSettings(modules))}
+          onClick={handleReset}
         >
           恢复默认
         </button>
@@ -105,3 +110,5 @@ export default function SettingsPage({ modules, settings, onChange }: Props) {
     </div>
   )
 }
+
+export default memo(SettingsPage)

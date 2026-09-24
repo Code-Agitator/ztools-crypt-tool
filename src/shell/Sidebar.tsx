@@ -1,3 +1,4 @@
+import { memo, useMemo } from 'react'
 import type { AlgorithmModule } from '../registry/types'
 import { CATEGORIES, getByCategory } from '../registry'
 
@@ -16,9 +17,14 @@ function matchAlgo(m: AlgorithmModule, q: string): boolean {
   return hay.includes(q.toLowerCase())
 }
 
-export default function Sidebar({ modules, currentId, onSelect, onOpenSettings, settingsActive, searchText }: Props) {
+function Sidebar({ modules, currentId, onSelect, onOpenSettings, settingsActive, searchText }: Props) {
   const q = searchText.trim()
-  const filtered = q ? modules.filter((m) => matchAlgo(m, q)) : modules
+
+  // 缓存搜索结果
+  const filtered = useMemo(
+    () => q ? modules.filter((m) => matchAlgo(m, q)) : modules,
+    [modules, q]
+  )
 
   return (
     <aside className="ct-side">
@@ -55,3 +61,5 @@ export default function Sidebar({ modules, currentId, onSelect, onOpenSettings, 
     </aside>
   )
 }
+
+export default memo(Sidebar)

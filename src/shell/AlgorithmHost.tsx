@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, memo, useMemo } from 'react'
 import type { AlgorithmModule } from '../registry/types'
 import type { DirectionMode } from '../registry/types'
 import { TeachCard } from '../shared'
@@ -12,13 +12,13 @@ function getToggleLabels(category: string): [string, string] {
   return ['加密', '解密']
 }
 
-export default function AlgorithmHost({ module }: Props) {
+function AlgorithmHost({ module }: Props) {
   const { Component, meta } = module
   const [dir, setDir] = useState<DirectionMode>(
     meta.category === 'encoding' ? 'encode' : 'encrypt'
   )
 
-  const [labelA, labelB] = getToggleLabels(meta.category)
+  const [labelA, labelB] = useMemo(() => getToggleLabels(meta.category), [meta.category])
 
   return (
     <div className="ct-main">
@@ -53,3 +53,5 @@ export default function AlgorithmHost({ module }: Props) {
     </div>
   )
 }
+
+export default memo(AlgorithmHost)
